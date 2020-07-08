@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            
+        </script>
+    </head>
+<body onload="LoadData()">
+    <img src="logo.gif" height="100px">
+    <div id="menu">
+        <ul>
+          <li><a href="#">Trang chủ</a></li>
+          <li><a href="#">Diễn đàn</a></li>
+          <li><a href="#">Tin tức</a></li>
+          <li><a href="#">Hỏi đáp</a></li>
+          <li><a href="#">Liên hệ</a></li>
+          <li><input type="search" placeholder="Search..."></li>
+        </ul>
+      </div>
+    <div class="container">
+        Name</a><br> <input type="text" id="fullname"><br>
+        Age<br> <input type="text" id="Age"><br>
+        Address<br> <input type="text" id="addr"><br>
+        <input type="button" id="btn" value="Add" onclick="Add()">
+    </div>   
+    <div class="container">
+        <table class="table" >
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Adrress</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody id="tuan">
+                
+            </tbody>
+        </table>
+     </div>
+</body>
+</html>
+<script >
+    var Json=[{}];
+    function readTextFile(file, callback) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.overrideMimeType("application/json");
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function() {
+            if (rawFile.readyState === 4 && rawFile.status == "200") {
+                callback(rawFile.responseText);
+            }
+        }
+        rawFile.send(null);
+    }
+    function LoadData(){
+        readTextFile("data.json", function(text){
+            var data = JSON.parse(text);
+            Json.push(data);
+            var html="";
+            for(i=0;i<Json[1].length;i++){
+                html+="<tr>";
+                html+="<td>"+Json[1][i].name+"</td>";
+                html+="  <td>"+Json[1][i].age+"</td>";
+                html+="  <td>"+Json[1][i].address+"</td>";
+                html+="  <td><input type='button' id='btn-edit' value='Edit' onclick=Edit("+i+")>";
+                html+="<input type='button' value='Delete' id='btn-delete' onclick=Delete("+i+")></td>";
+                html+="</tr>";
+            }
+            document.getElementById("tuan").innerHTML=html;
+        });
+    }
+    function CheckNhap(){
+        if(document.getElementById("fullname").value==""){
+            document.getElementById("fullname").focus();
+            return false;
+        }else if(document.getElementById("Age").value==""){
+            document.getElementById("Age").focus();
+            return false;
+        }else if(document.getElementById("addr").value==""){
+            document.getElementById("addr").focus();
+            return false;
+        }
+        return true;
+    }
+    var flag=0;
+    function Add() {
+        if(CheckNhap()){
+            if(document.getElementById("btn").value=="Add"){
+                var addnew = {
+                    name: document.getElementById("fullname").value,
+                    age: document.getElementById("Age").value,
+                    address: document.getElementById("addr").value,
+                };
+                Json[1].push(addnew);
+                LoadData();
+            }else{
+                Json[1][flag].name = document.getElementById("fullname").value;
+                Json[1][flag].age = document.getElementById("Age").value;
+                Json[1][flag].address = document.getElementById("addr").value;
+                LoadData();
+                document.getElementById("btn").value = "Add";
+                document.getElementById("fullname").value = "";
+                document.getElementById("Age").value = "";
+                document.getElementById("addr").value = "";
+            }
+        }
+        
+    }
+    function Delete(i){
+        if(confirm("Bạn có chắc chắn muốn xóa không?")){
+        Json[1].splice(i,1);
+        LoadData();}
+    }
+    function Edit(i){
+        document.getElementById("fullname").value=Json[1][i].name;
+        document.getElementById("Age").value=Json[1][i].age;
+        document.getElementById("addr").value=Json[1][i].address;
+        document.getElementById("btn").value="Update";
+        flag=i;
+    }
+</script>
